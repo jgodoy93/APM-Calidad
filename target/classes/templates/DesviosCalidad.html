@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Mobirise v5.2.0, mobirise.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <link href="/css/styles.css" rel="stylesheet" />
+    <link href="/css/album-recreated.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <title>APM-Calidad</title>
+</head>
+<header>
+
+</header>
+<body>
+<!--Barra Navegación-->
+<nav class="navbar navbar-light" style="background-color:orange;">
+    <div class="col-6">
+        <span class="navbar-brand mb-0 h1">Artrans S.A. | APM</span>
+    </div>
+    <div class="col-6 text-right">
+      <a href="/inicio"><button type="button" class="btn btn-dark">Volver</button></a>
+    </div>
+</nav>
+
+<!--Nombre Departamento-->
+<div class="container-fluid">
+    <div class="row py-1">
+        <div class="col-6 text-left">
+          <div class="container">
+            <h3><i th:text="${usuario.nombre}+' '+${usuario.apellido}"></i></h3>
+          </div>
+        </div>
+        <div class="col-6 text-right">
+            <h3 th:if="${usuario.permiso == T(com.artrans.bonos.enun.Permisos).SUPERVISOR}" th:text="${usuario.permiso}" style="color: teal;"></h3>
+            <h3 th:if="${usuario.permiso == T(com.artrans.bonos.enun.Permisos).CALIDAD}" th:text="${usuario.permiso}" style="color: teal;"></h3>
+        </div>
+    </div>
+</div>
+<!--Navegacion Interna-->
+<!--Navegador Desvios-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light py-3 border border-secondary">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <!--Generar Dedsvio -->
+            <button type="button" class="btn btn-outline-warning" data-toggle="modal" id="generarDesvio" data-target=".bd-example-modal-lg">Generar Desvío</button>
+            <!--Modal Del Desvio-->
+                <!--Modal Etapa 1 Proyecto y parametros desvio-->
+                  <div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header" style="background-color:orange;">
+                          <h5 class="modal-title" id="exampleModalLabel">Desvio</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <!--Cuerpo del desvio-->
+                          <!--Modal Body-->
+                        <div class="modal-body">
+                          <!--Buscador de Notas de Venta-->   
+                            <div class="form-group">
+                                <h6>Transformador</h6>
+                                <div class="container-flud">
+                                  <div class="row justify-content-start">
+                                    <div class="col-3">
+                                      <input type="text" class="form-control" name="notaVenta" id="ingresoNv" placeholder="Nota de Venta"> 
+                                    </div>
+                                    <div class="col-3 pl-0">
+                                      <button type="button" id="buscarProyecto" class="btn btn-warning ml-1 float-left">Buscar</button>
+                                    </div>
+                                    <div class="col-12">
+                                        <h6 id="resBusqueda"></h6>
+                                    </div>
+                                  </div>
+                                  <div class="container-fluid">
+                                      <p id="cl1" style="display: none;">Cliente: <i><b id="cliResult"></b></i></p>
+                                  </div>
+                                </div>
+                                <!--Container Resultados seleccion proyecto-->
+                                <div class="container-fluid">
+                                  <label for="exampleFormControlSelect2">Descripciones</label>
+                                  <select multiple class="form-control overflow-auto" id="exampleFormControlSelect2">                                
+                                  </select>
+                                  <br>
+                                  <p class="py-1">Seleccionada: <br><i><b id="desText"></b></i></p>                                                                   
+                                </div>
+                            </div>                                                         
+                            <hr>
+                            <!--Selecciones del Desvio-->
+                            <h6>Caracteristicas</h6>
+                            <div class="row">
+                                                  <div class="form-group col-md-4">
+                                                    <!--Lista de Empleados-->
+                                                    <p>Emisor: <br><i><b th:text="${usuario.nombre}+' '+${usuario.apellido}" id="nombreemisor" style="color: teal;"></b></i></p>
+                                                    <p id="idEmisor" style="display: none;" th:text="${usuario.id}"></p>
+                                                    <!--Cambiar el tamaño de los string en la consulta a la base de datos xq se acortan los nombres-->
+                                                    <label for="inputArea">Area</label>
+                                                    <select id="inputArea" class="form-control">
+                                                    </select>                                                                                 
+                                                    <label for="Pro">Proceso Involucrado</label>
+                                                    <select id="Pro" class="form-control">
+                                                    <option selected>Seleccionar...</option>  
+                                                    <option value="Diseño">Diseño</option>
+                                                    <option value="PreArmado_Metalúrgica">PreArmado Metalúrgica</option>
+                                                    <option value="Metalúrgica_Cuba">Metalurgica Cuba</option>
+                                                    <option value="Metalúrgica_Accesorios">Metalurgica Accesorios</option>
+                                                    <option value="Pintura_Cuba">Pintura Cuba</option>
+                                                    <option value="Pintura_Accesorios">Pintura Accesorios</option>
+                                                    <option value="PreArmado_Bobinado">PreArmado Bobinado</option>
+                                                    <option value="Bobinado">Bobinado</option>
+                                                    <option value="PreArmado_Núcleo">PreArmado Núcleo</option>
+                                                    <option value="PreArmado_Montaje">PreArmado Montaje</option>
+                                                    <option value="Montaje">Montaje</option>
+                                                    <option value="PreArmado_Conexionado">PreArmado Conexionado</option>
+                                                    <option value="Conexionado">Conexionado</option>
+                                                    <option value="PreArmado_Encubado">PreArmado Encubado</option>
+                                                    <option value="Encubado">Encubado</option>
+                                                    <option value="Ensayo">Ensayo</option>
+                                                    <option value="PreArmado_Accesorios">PreArmado Accesorios</option>
+                                                    <option value="PreArmado_Repuestos">PreArmado Repuestos</option>
+                                                    <option value="Despacho">Despacho</option>
+                                                    </select>
+                                                    <label for="Trafo">Trafoparte Involucrada</label>
+                                                    <select id="Trafo" class="form-control">
+                                                    <option selected>Seleccionar...</option>
+                                                    <option value="Núcleo">Núcleo</option>
+                                                    <option value="Bobinas">Bobinas</option>
+                                                    <option value="Cuba">Cuba</option>
+                                                    <option value="Parte_Activa">Parte Activa</option>
+                                                    <option value="Tanque">Tanque</option>
+                                                    <option value="Radiantes">Radiantes</option>
+                                                    <option value="Aisladores">Aisladores</option>
+                                                    <option value="Accesorios">Accesorios</option>
+                                                    </select>
+                                                    <label for="Ishi">Causa Ishikawa</label>
+                                                    <select id="Ishi" class="form-control">
+                                                    <option selected>Seleccionar...</option>
+                                                    <option value="Mano_de_Obra">Mano de Obra</option>
+                                                    <option value="Máquinaria">Máquinaria</option>
+                                                    <option value="Materiales">Materiales</option>
+                                                    <option value="Medio_Ambiente">Medio Ambiente</option>
+                                                    <option value="Método">Método</option>
+                                                    </select>
+                                                    <label for="Efect">Efecto Calidad de Producto</label>
+                                                    <select id="Efect" class="form-control">
+                                                    <option selected>Seleccionar...</option>
+                                                    <option value="Atraso">Atraso</option>
+                                                    <option value="Retrabajo">Retrabajo</option>
+                                                    <option value="Rotura">Rotura</option>
+                                                    <option value="Exceso">Exceso</option>
+                                                    <option value="Articulo_Defectuoso">Articulo Defectuoso</option>
+                                                    </select>
+                                                    <label for="pla">Planta</label>
+                                                    <select id="pla" class="form-control">
+                                                      <option selected>Seleccionar...</option>
+                                                      <option value="Planta1">Planta 1</option>
+                                                      <option value="Planta2">Planta 2</option>
+                                                    </select>
+                                                  </div>
+                                                  <!--Text-Area Observacion de Calidad-->
+                                                  <div class="form-group col-md-8">
+                                                    <label for="Obs">Observación</label>
+                                                    <textarea class="form-control" id="Obs" rows="13"></textarea>
+                                                  </div>
+                            </div>                    
+                        </div>  
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <button id="crearDesvio" type="button" class="btn btn-warning" data-toggle="modal">Siguiente</button>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner" style="display: none;"></span>
+                            <!--data-target=".bd-example1-modal-lg"-->
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <!--Modal Etapa 2 Imagenes-->
+                <div class="modal fade bd-example1-modal-lg" id="modalImagenes" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="overflow-y: scroll;">
+                  <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header" style="background-color:orange;">
+                        <h5 class="modal-title" id="titulo2daEtapa"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </div>
+                      <div class="modal-body">
+                        <div class="container-fluid">
+                          <div class="col-6">
+                            <p>Nota de Venta: <i><b id="nv"></b></i></p>
+                          </div>
+                          <div class="col-6">
+                            <p id="2daCliente">Cliente: <i><b id="cliD"></i></b></p>
+                          </div>
+                          <div class="col-12">
+                            <p id="2dans">Nro Serie: <i><b id="nsD"></i></b></p>
+                          </div>
+                          <div class="col-12">
+                            <p>Descripción: <i><b id="desD"></i></b></p>
+                          </div>
+                          <div class="col-12">
+                            <p>Generó: <i><b id="gen"></i></b></p>
+                          </div>
+                          <div class="col-6">
+                            <p>Area: <i><b id="sec"></i></b></p>                           
+                          </div>
+                          <div class="col-6">
+                            <p>Responsable: <i><b id="seg"></i></b></p>
+                          </div>
+                          <div class="col-12">
+                            <p>Planta: <i><b id="planta2da"></i></b></p>
+                          </div>
+                          <div class="col-6">
+                            <p>Proceso: <i><b id="proD"></i></b></p>
+                          </div>
+                          <div class="col-6">
+                            <p>Trafo-Parte: <i><b id="tfD"></i></b></p>
+                          </div>
+                          <div class="col-6">
+                            <p>Causa Ishikawa: <i><b id="isD"></i></b></p>
+                          </div>
+                          <div class="col-6">
+                            <p>Efecto No-Calidad: <i><b id="noC"></i></b></p>
+                          </div> 
+                      </div>  
+                        <hr>
+                          <!--Album de Fotos Desvio-->
+                          <div class="album py-2 bg-light">
+                          <div class="container-fluid">                          
+                                  <div class="col-md-6">
+                                    <div class="card mb-4 box-shadow">
+                                        <img class="card-img-top" id="myImg1" style="height:300px; width: 100%; display:block;" data-holder-rendered="true">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="custom-file">
+                                                    <input type="file" class="custom-file-input" id="imput1">
+                                                    <label class="custom-file-label" for="customFile">Cargar Imagen</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card mb-4 box-shadow">
+                                        <img class="card-img-top" id="myImg2" style="height:300px; width:100%; display:block;" data-holder-rendered="true">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="custom-file">
+                                                    <input type="file" class="custom-file-input" id="imput2">
+                                                    <label class="custom-file-label" for="customFile">Cargar Imagen</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                          </div>
+                          <div class="container-fluid">                          
+                              <div class="col-md-6">
+                              <div class="card mb-4 box-shadow">
+                                  <img class="card-img-top" id="myImg3" style="height:300px; width: 100%; display:block;" data-holder-rendered="true">
+                                  <div class="card-body">
+                                      <div class="d-flex justify-content-between align-items-center">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="imput3">
+                                            <label class="custom-file-label" for="customFile">Cargar Imagen</label>
+                                        </div>
+                                      </div>
+                                  </div>
+                              </div>
+                              </div>
+                          <div class="col-md-6">
+                              <div class="card mb-4 box-shadow">
+                                  <img class="card-img-top" id="myImg4" style="height:300px; width:100%; display:block;" data-holder-rendered="true">
+                                  <div class="card-body">
+                                      <div class="d-flex justify-content-between align-items-center">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="imput4">
+                                            <label class="custom-file-label" for="customFile">Cargar Imagen</label>
+                                        </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                        </div>
+                          <div class="container-fluid">
+                            <div class="col-12 d-flex justify-content-end">
+                              <button type="button" id="cargar" class="btn btn-outline-dark">Subir Imagenes</button>
+                            </div>
+                          </div>
+                        <div id="myModal1" class="modal1">
+                          <span id="closeA" class="close1">&times;</span>
+                          <img class="modal1-content1" id="Img1">
+                          </div>
+                          <div id="myModal2" class="modal1">
+                          <span id="closeB" class="close1">&times;</span>
+                          <img class="modal1-content1" id="Img2">
+                          </div>
+                          <div id="myModal3" class="modal1">
+                          <span id="closeC" class="close1">&times;</span>
+                          <img class="modal1-content1" id="Img3">
+                          </div>
+                          <div id="myModal4" class="modal1">
+                          <span id="closeD" class="close1">&times;</span>
+                          <img class="modal1-content1" id="Img4">
+                          </div>
+                          </div>
+                              <div class="container-fluid">
+                                <div class="col-12">
+                                  <h6>Observación:</h6>
+                                  <br>
+                                  <p id="obs" style="word-wrap: break-word;"></p>
+                                </div>
+                          </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button id="DirectSend" type="button" class="btn btn-warning">Enviar</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!--Modal Mostrar Desvio-->
+                <div class="modal fade bd-example2-modal-lg" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="overflow-y: scroll;">
+                  <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header" style="background-color:orange;">
+                        <h5 class="modal-title" id="ModalMostraTitulo"></h5>
+                        <div class="text-center">
+                          <div class="spinner-border" role="status" id="sp1" style="display: none;">
+                          </div>
+                        </div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="
+                        margin-left: 0px;">
+                          <span aria-hidden="true">&times;</span>     
+                      </div>
+                      <div class="modal-body">
+                        <div class="container-fluid">
+                            <div class="col-6">
+                              <p id="nvP">Nota de Venta: <i><b id="nvMostrar"></b></i></p>
+                            </div>
+                            <div class="col-6">
+                              <p id="mostrarCliente">Cliente: <i><b id="cliMostrar"></i></b></p>
+                            </div>
+                            <div class="col-12">
+                              <p id="mostrarns">Nro Serie: <i><b id="nsDMostrar"></i></b></p>
+                            </div>
+                            <div class="col-12">
+                              <p>Descripción: <i><b id="desDMostrar"></i></b></p>
+                            </div>
+                            <div class="col-12">
+                              <p>Generó: <i><b id="genMostrar"></i></b></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Area: <i><b id="sectorMostar"></i></b></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Responsable: <i><b id="segMostrar"></i></b></p>
+                            </div>
+                            <div class="col-12">
+                              <p>Planta: <i><b id="plantaMostrar"></i></b></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Proceso: <i><b id="proDMostrar"></i></b></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Trafo-Parte: <i><b id="tfDMostrar"></i></b></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Causa Ishikawa: <i><b id="isDMostrar"></i></b></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Efecto No-Calidad: <i><b id="noCMostrar"></i></b></p>
+                            </div>   
+                        </div>
+                        <hr>
+                          <!--Album de Fotos Desvio-->
+                          <div class="album py-2 bg-light border border-secondary rounded">
+                            <div class="d-flex justify-content-center pb-2">
+                              <i><b><p id="tituloImg" style="display: inline;">Imagenes</p></b></i>
+                              <i><b><p id="msgImagenes" style="display: none;">El Desvio no tiene imagenes Cargadas.</p></b></i>
+                            </div>
+                        <div class="container-fluid">                          
+                                <div class="col-md-6" id="containerImagenes1">
+                                  <div class="card mb-4 box-shadow">
+                                      <img class="card-img-top" id="myImg1M" style="height:300px; width: 100%; display:block;" data-holder-rendered="true">
+                                  </div>
+                              </div>
+                              <div class="col-md-6" id="containerImagenes2">
+                                  <div class="card mb-4 box-shadow">
+                                      <img class="card-img-top" id="myImg2M" style="height:300px; width:100%; display:block;" data-holder-rendered="true">
+                                  </div>
+                              </div>
+                        </div>
+                        <div class="container-fluid">                          
+                            <div class="col-md-6" id="containerImagenes3">
+                            <div class="card mb-4 box-shadow">
+                                <img class="card-img-top" id="myImg3M" style="height:300px; width: 100%; display:block;" data-holder-rendered="true">
+                            </div>
+                            </div>
+                        <div class="col-md-6" id="containerImagenes4">
+                            <div class="card mb-4 box-shadow">
+                                <img class="card-img-top" id="myImg4M" style="height:300px; width:100%; display:block;" data-holder-rendered="true">
+                            </div>
+                        </div>
+                      </div>
+                            <div id="myModal1M" class="modal1">
+                            <span id="closeAM" class="close1">&times;</span>
+                            <img class="modal1-content1" id="Img1M">
+                            </div>
+                            <div id="myModal2M" class="modal1">
+                            <span id="closeBM" class="close1">&times;</span>
+                            <img class="modal1-content1" id="Img2M">
+                            </div>
+                            <div id="myModal3M" class="modal1">
+                            <span id="closeCM" class="close1">&times;</span>
+                            <img class="modal1-content1" id="Img3M">
+                            </div>
+                            <div id="myModal4M" class="modal1">
+                            <span id="closeDM" class="close1">&times;</span>
+                            <img class="modal1-content1" id="Img4M">
+                            </div>                     
+                          </div>
+                        <hr>
+                          <!--Observacion-->
+                          <div class="container border border-secondary rounded">
+                            <div class="col-12">                        
+                                <p>Observación: <br><i><b id="obsMostrar" style="word-wrap: break-word;"></i></b></p>                                                            
+                            </div>
+                          </div>
+                        <hr>
+                      <!--Disposicion Inmediata-->
+                      <div class="container-fluid border border-danger rounded" style="margin-bottom: 0px">
+                        <div class="form-group col-md-12 pt-1">
+                          <p>Disposicion Inmediata: <br><i><b id="DispoCal" style="word-wrap: break-word;"></i></b></p> 
+                        </div>
+                      </div>
+                      <hr>
+                      <!--Ver Respuesta Desvio-->
+                      <div class="container-fluid border border-secondary rounded" id="containerRespuestaCal">
+                        <div class="col-12 pt-1">
+                          <h6>Respuesta Desvio</h6>
+                        </div>
+                        <div class="col-12">
+                          <div class="row py-1">
+                            <div class="col-12">
+                                <p>Estado Desvio: <i><b id="EstadoDesvioCal"></i></b></p> 
+                                <p>Causa Raiz: <br><i><b id="verCausaRCal"></i></b></p>
+                                <p>Horas/H de Retrabajo: <br><i><b id="verHorasCal"></i></b></p>
+                                <p>Analisis de Causa: <br><i><b id="verAnalisisCal" style="word-wrap: break-word;"></i></b></p>
+                                <p>Accion Correctiva: <br><i><b id="verAccionCal" style="word-wrap: break-word;"></i></b></p>                                 
+                            </div>
+                          </div>
+                        </div>
+                      </div>                    
+                      <hr>
+                        <!--Activar observacion correccion-->                     
+                        <div class="container-fluid" id="containerObservacion" style="display: none;">
+                            <div class="form-group col-md-12">
+                              <label for="ObservacionCorreccion">Observación Correccion</label>
+                              <textarea class="form-control" id="ObservacionCorreccion" rows="8"></textarea>   
+                            </div>
+                            <div class="col-12 m-0">
+                              <div class="d-flex justify-content-end pb-2">
+                                <button type="button" class="btn btn-outline-danger" id="enviarObservacion">Enviar Correccion</button>
+                              </div>
+                            </div>
+                        </div>                   
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" title="Corregir" class="btn btn-outline-danger rounded-circle"id="DesaprobarDesvio"><i class="material-icons md-18">thumb_down</i></button>
+                        <button type="button" title="Cerrar" class="btn btn-outline-success rounded-circle" data-dismiss="modal" id="AprobarDesvio"><i class="material-icons md-18">thumb_up</i></button> 
+                        <button type="button" title="Enviar" class="btn btn-outline-info rounded-circle" id="EnviarDesvio"><i class="material-icons md-18">send</i></button>  
+                      </div>
+                    </div>
+                  </div>
+                </div>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Ver Estados
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="#">Generados</a>
+              <a class="dropdown-item" href="#">Cerrados</a>
+              <a class="dropdown-item" href="#">Atrasados</a>
+              <a class="dropdown-item" href="#">En Proceso</a>
+              <a class="dropdown-item" href="#">Para Corregir</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Informes
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="#">Horas de Retrabajo</a>
+              <a class="dropdown-item" href="#">Materiales</a>
+              <a class="dropdown-item" href="#">Cumplimiento</a>
+              <a class="dropdown-item" href="#">Estado de Planta</a>
+          </li>
+      </ul>
+      <div class="form-group pull-right my-2 my-lg-0">
+        <input type="text" class="search form-control" placeholder="Buscardor" id="match">
+      </div>
+    </div>
+</nav>
+
+<div class="container-fluid">      
+            <span class="counter pull-right"></span>
+            <table class="table table table-sm table-bordered results" id="Desvios">
+                <thead class="thead-dark" style="font-size: small;"> 
+                <tr>
+                    <th scope="col">#Nro</th>
+                    <th scope="col">Emision</th>
+                    <th scope="col">Nv</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Area</th>
+                    <th scope="col">Responsable Seguimiento</th>
+                    <th scope="col">Planta</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">R. Inmediata</th> 
+                    <th scope="col">Respuesta</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+                <tr class="warning no-result" id="noResults">
+                  <td class="text-white mt-0" colspan="10"><i class="fa fa-warning"></i> No result</td>
+                </tr>
+                </thead>
+                <tbody class="table-bordered" style="font-size: small;">
+                  <tr th:each="Desvio:${Desvios}" class="text-lg-center">
+                      <td scope="row" class="py-2" id="nroDesvio" th:text="${Desvio.id}"></td>
+                      <td scope="row" class="py-2" id="fechaEmi" th:text="${Desvio.fechaEmision}"></td>
+                      <td scope="row" class="py-2" id="nvDesvio" th:text="${Desvio.proyecto.notadeVenta}"></td>
+                      <td scope="row" class="py-2" id="CliDesvio" th:text="${Desvio.proyecto.cliente}"></td>
+                      <td scope="row" class="py-2" id="CliDesvio" th:text="${Desvio.area.nombre}"></td>
+                      <td scope="row" class="py-2" id="CliDesvio" th:text="${Desvio.responsable.nombre}+' '+${Desvio.responsable.apellido}"></td>
+                      <td scope="row" class="py-2" id="plantaDesvio" th:text="${Desvio.planta}"></td>
+                      <td scope="row" class="py-2" th:switch="${Desvio.estado}">
+                        <h7 th:case="'Iniciado'"><b><i th:text="${Desvio.estado}" style="color:slateblue"></i></b></h7>
+                        <h7 th:case="'Enviado'"><b><i th:text="${Desvio.estado}" style="color:orange"></i></b></h7>
+                        <h7 th:case="'Checkeado'"><b><i th:text="${Desvio.estado}" style="color:teal"></i></b></h7>
+                        <h7 th:case="'Cerrado'"><b><i th:text="${Desvio.estado}" style="color:springgreen"></i></b></h7>
+                        <h7 th:case="'Corregir'"><b><i th:text="Desaprobado" style="color:red"></i></b></h7>
+                        <h7 th:case="'Asignado'"><b><i th:text="${Desvio.estado}" style="color:teal"></i></b></h7>
+                        <h7 th:case="'Verificar'"><b><i th:text="Corregir" style="color:indigo"></i></b></h7>
+                        <h7 th:case="'Modificado'"><b><i th:text="${Desvio.estado}" style="color: maroon"></i></b></h7>
+                      </td>
+                      <td scope="row" class="py-2" th:text="${Desvio.fechaDisposicion}"></td>
+                      <td scope="row" class="py-2" id="FechaResp" th:text="${Desvio.fechaRespuesta}"></td>
+                      <td>
+                        <a th:href="@{DesvioCalidad/OneDesvio(Id=${Desvio.id})}" class="view" title="Ver Desvio" data-toggle="modal" data-dismiss="modal" data-target=".bd-example2-modal-lg" id="verDesvio"><i class="material-icons md-18">visibility</i></a>
+                        <a th:href="${Desvio.id}" class="edit" title="Editar" id="EditarDesvio"><i class="material-icons md-18">&#xE254;</i></a>
+                        <a th:href="${Desvio.id}" class="delete" title="Eliminar" id="deleteDesvio"><i class="material-icons md-18">&#xE872;</i></a>
+                      </td>
+                  </tr> 
+                </tbody>
+            </table>    
+</div>
+
+<!--Modal EditarDesvio-->
+<div class="modal fade bd-example-modal-lg" id="modalModificarDesv" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="overflow-y: scroll;">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color:orange;">
+        <h5 class="modal-title" id="ModiDesv"></h5>
+        <div class="text-center">
+          <div class="spinner-border" role="status" id="sp2" style="display: none;">
+          </div>
+        </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="col-12 p-1">
+            <i style="color: tomato;"><b>"Recordatorio: -Presionar el boton "Guardar Modificación" al final del desvio, para hacer efectivos sus cambios."</b></i>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="container-fluid m-1 border border-secondary rounded" >
+            <div class="col-6">
+              <p>Nota de Venta: <i><b id="nvMod"></b></i></p>
+            </div>
+            <div class="col-6">
+              <p>Cliente: <i><b id="clMod"></i></b></p>
+            </div>
+            <div class="col-12">
+              <p>Nro Serie: <i><b id="nsMod"></i></b></p>
+            </div>
+            <div class="col-12">
+              <p>Descripción: <i><b id="desMod"></i></b></p>
+            </div>
+            <div class="col-12">
+              <p id="idProyectoMOD" style="display: none;">idProyecto</p>
+            </div>
+            <div class="col-12">
+              <div class="d-flex justify-content-end m-1">
+                <button type="button" id="modiPro" class="btn btn-outline-info"><i class="material-icons md-18">&#xE254;</i></button>
+              </div>    
+            </div>
+          </div>
+          <div class="container fluid m-1 border border-secondary rounded" style="padding-bottom: 15px;">
+            <div class="col-12 pb-2">                        
+                <div class="col-6 mt-2">
+                  <p>Responsable de Emision: <i><b id="RespEmi"></b></i></p>
+                </div>                 
+                <div class="col-12 border border-secondary rounded">
+                  <div class="row">
+                    <div class="col-8">
+                      <div class="col-12">
+                        <div class="d-flex justify-content-start">
+                        <p style="margin-bottom: 8px; margin-top: 8px;">Área: <i><b id="AreaMOD"></b></i></p>
+                        </div>              
+                      </div>
+                      <div class="col-12">
+                        <div class="d-flex justify-content-start">
+                        <p style="margin-bottom: 8px; margin-top: 8px;">Responsable de Área: <i><b id="resMOD"></b></i></p>
+                        </div>              
+                      </div>
+                    </div>
+                    <div class="col-4" style="padding-right: 2px;padding-top: 2px;padding-bottom: 2px;">
+                      <div class="d-flex justify-content-end">
+                        <button type="button" id="modiResp" class="btn btn-outline-info" style="margin-top: 15px;margin-bottom: 15px;margin-right: 2px;"><i class="material-icons md-18">&#xE254;</i></button>
+                      </div> 
+                    </div>
+                  </div>
+                </div>           
+                <div class="col-6">
+                  <label for="plaMod">Planta</label>
+                  <select id="plaMod" class="form-control">
+                    <option selected>Seleccionar...</option>
+                    <option value="Planta1">Planta 1</option>
+                    <option value="Planta2">Planta 2</option>
+                  </select>                  
+                </div>
+                <div class="col-6">
+                  <label for="ProMod">Proceso Involucrado</label>
+                  <select id="ProMod" class="form-control">
+                  <option selected>Seleccionar...</option>
+                  <option value="Diseño">Diseño</option>
+                  <option value="PreArmado_Metalúrgica">PreArmado Metalúrgica</option>
+                  <option value="Metalúrgica_Cuba">Metalurgica Cuba</option>
+                  <option value="Metalúrgica_Accesorios">Metalurgica Accesorios</option>
+                  <option value="Pintura_Cuba">Pintura Cuba</option>
+                  <option value="Pintura_Accesorios">Pintura Accesorios</option>
+                  <option value="PreArmado_Bobinado">PreArmado Bobinado</option>
+                  <option value="Bobinado">Bobinado</option>
+                  <option value="PreArmado_Núcleo">PreArmado Núcleo</option>
+                  <option value="PreArmado_Montaje">PreArmado Montaje</option>
+                  <option value="Montaje">Montaje</option>
+                  <option value="PreArmado_Conexionado">PreArmado Conexionado</option>
+                  <option value="Conexionado">Conexionado</option>
+                  <option value="PreArmado_Encubado">PreArmado Encubado</option>
+                  <option value="Encubado">Encubado</option>
+                  <option value="Ensayo">Ensayo</option>
+                  <option value="PreArmado_Accesorios">PreArmado Accesorios</option>
+                  <option value="PreArmado_Repuestos">PreArmado Repuestos</option>
+                  <option value="Despacho">Despacho</option>
+                  </select>                  
+                </div>
+                <div class="col-6">
+                  <label for="TrafoMod">Trafoparte Involucrada</label>
+                  <select id="TrafoMod" class="form-control">
+                  <option selected>Seleccionar...</option>  
+                  <option value="Núcleo">Núcleo</option>
+                  <option value="Bobinas">Bobinas</option>
+                  <option value="Cuba">Cuba</option>
+                  <option value="Parte_Activa">Parte Activa</option>
+                  <option value="Tanque">Tanque</option>
+                  <option value="Radiantes">Radiantes</option>
+                  <option value="Aisladores">Aisladores</option>
+                  <option value="Accesorios">Accesorios</option>
+                  </select>                  
+                </div>
+                <div class="col-6">
+                  <label for="IshiMod">Causa Ishikawa</label>
+                  <select id="IshiMod" class="form-control">
+                  <option selected>Seleccionar...</option>
+                  <option value="Mano_de_Obra">Mano de Obra</option>
+                  <option value="Máquinaria">Máquinaria</option>
+                  <option value="Materiales">Materiales</option>
+                  <option value="Medio_Ambiente">Medio Ambiente</option>
+                  <option value="Método">Método</option>
+                  </select>                   
+                </div>
+                <div class="col-6">
+                  <label for="EfectMod">Efecto Calidad de Producto</label>
+                  <select id="EfectMod" class="form-control">
+                  <option selected>Seleccionar...</option>
+                  <option value="Atraso">Atraso</option>
+                  <option value="Retrabajo">Retrabajo</option>
+                  <option value="Rotura">Rotura</option>
+                  <option value="Exceso">Exceso</option>
+                  <option value="Articulo_Defectuoso">Articulo Defectuoso</option>
+                  </select>                                   
+                </div>
+              </div>
+              <div class="container-fluid">
+                <div class="col-12">
+                  <label for="ObsMOD">Observación</label>
+                  <textarea class="form-control" id="ObsMOD" rows="4"></textarea>
+                </div>  
+              </div>
+              <div class="container-fluid">
+                  <div class="col-12 d-flex justify-content-end">
+                    <button type="button" id="ModiParams" class="btn btn-outline-info" title="Subir" style="margin-top: 10px;"><p style="margin-bottom: 0px;">Guardar Modificación
+                     </p><i class="material-icons md-18">save_alt</i>
+                    </button>
+                  </div>
+                  <div class="col-12 d-flex justify-content-end">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner1" style="display: none;margin-top: 5px;"></span>
+                    <p id="msgGuardando" style="display: none;">Guardando...</p>
+                   </div> 
+              </div>
+          </div> 
+      </div>  
+        <hr>
+          <!--Album de Fotos Desvio-->
+          <div class="album py-2 bg-light border border-secondary rounded">
+            <div class="container-fluid"> 
+              <div class="col-12">
+                <i><b><p id="msgUserImg" style="color:red"></p></b></i>
+              </div>                         
+                    <div class="col-md-6">
+                      <div class="card mb-4 box-shadow">
+                          <img class="card-img-top" id="myImg1MOD" style="height:300px; width: 100%; display:block;" data-holder-rendered="true">
+                          <div class="card-body" style="padding-top: 10px;padding-bottom: 10px;"> 
+                                  <div class="col-12 mt-1">
+                                    <input type="file" class="custom-file-input" id="imput1MOD">
+                                      <label class="custom-file-label" for="customFile">Buscar</label> 
+                                  </div>
+                                  <div class="col-12 pt-2">
+                                    <div class="col-12 d-flex justify-content-center">
+                                      <button type="button" id="ConfirmModi1" class="btn btn-outline-info" title="Subir"><i class="material-icons md-18">publish</i></button> 
+                                    </div>
+                                  </div>
+                                  <div class="col-12"style="padding-left: 200px;padding-right: 0px;">
+                                    <div class="row" style="margin-top: 2px;display:none;" id="row1">
+                                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:block;"></span>
+                                        <p style="display:block;margin-bottom: 0px;margin-left: 5px;">Guardando...</p>
+                                    </div> 
+                                  </div>
+                            </div>
+                      </div>                                     
+                    </div>
+                  <div class="col-md-6">
+                      <div class="card mb-4 box-shadow">
+                          <img class="card-img-top" id="myImg2MOD" style="height:300px; width:100%; display:block;" data-holder-rendered="true">
+                          <div class="card-body" style="padding-top: 10px;padding-bottom: 10px;">
+                            <div class="col-12 mt-1">
+                              <input type="file" class="custom-file-input" id="imput2MOD">
+                                <label class="custom-file-label" for="customFile">Buscar</label> 
+                            </div>
+                            <div class="col-12 pt-2">
+                              <div class="col-12 d-flex justify-content-center">
+                                <button type="button" id="ConfirmModi2" class="btn btn-outline-info" title="Subir"><i class="material-icons md-18">publish</i></button> 
+                              </div>
+                            </div>
+                            <div class="col-12"style="padding-left: 200px;padding-right: 0px;">
+                              <div class="row" style="margin-top: 2px;display:none;" id="row2">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:block;"></span>
+                                  <p style="display:block;margin-bottom: 0px;margin-left: 5px;">Guardando...</p>
+                              </div> 
+                            </div>                                  
+                          </div>
+                      </div>
+                  </div>
+            </div>
+            <div class="container-fluid">                          
+                <div class="col-md-6">
+                <div class="card mb-4 box-shadow">
+                    <img class="card-img-top" id="myImg3MOD" style="height:300px; width: 100%; display:block;" data-holder-rendered="true">
+                    <div class="card-body">
+                      <div class="col-12 mt-1">
+                        <input type="file" class="custom-file-input" id="imput3MOD">
+                          <label class="custom-file-label" for="customFile">Buscar</label> 
+                      </div>
+                      <div class="col-12 pt-2">
+                        <div class="col-12 d-flex justify-content-center">
+                          <button type="button" id="ConfirmModi3" class="btn btn-outline-info" title="Subir"><i class="material-icons md-18">publish</i></button> 
+                        </div>
+                      </div>
+                      <div class="col-12"style="padding-left: 200px;padding-right: 0px;">
+                        <div class="row" style="margin-top: 2px;display:none;" id="row3">
+                          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:block;"></span>
+                            <p style="display:block;margin-bottom: 0px;margin-left: 5px;">Guardando...</p>
+                        </div> 
+                      </div>                      
+                    </div>
+                </div>
+                </div>
+            <div class="col-md-6">
+                <div class="card mb-4 box-shadow">
+                    <img class="card-img-top" id="myImg4MOD" style="height:300px; width:100%; display:block;" data-holder-rendered="true">
+                    <div class="card-body">
+                      <div class="col-12 mt-1">
+                        <input type="file" class="custom-file-input" id="imput4MOD">
+                          <label class="custom-file-label" for="customFile">Buscar</label> 
+                      </div>
+                      <div class="col-12 pt-2">
+                        <div class="col-12 d-flex justify-content-center">
+                          <button type="button" id="ConfirmModi4" class="btn btn-outline-info" title="Subir"><i class="material-icons md-18">publish</i></button> 
+                        </div>
+                      </div>
+                      <div class="col-12"style="padding-left: 200px;padding-right: 0px;">
+                        <div class="row" style="margin-top: 2px;display:none;" id="row4">
+                          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:block;"></span>
+                            <p style="display:block;margin-bottom: 0px;margin-left: 5px;">Guardando...</p>
+                        </div> 
+                      </div>                        
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div id="myModal1MOD" class="modal1">
+              <span id="closeAMOD" class="close1">&times;</span>
+              <img class="modal1-content1" id="Img1MOD">
+            </div>
+            <div id="myModal2MOD" class="modal1">
+              <span id="closeBMOD" class="close1">&times;</span>
+              <img class="modal1-content1" id="Img2MOD">
+            </div>
+            <div id="myModal3MOD" class="modal1">
+              <span id="closeCMOD" class="close1">&times;</span>
+              <img class="modal1-content1" id="Img3MOD">
+            </div>
+            <div id="myModal4MOD" class="modal1">
+              <span id="closeDMOD" class="close1">&times;</span>
+              <img class="modal1-content1" id="Img4MOD">
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal Confirmacion-->
+<div class="modal fade" tabindex="-1" role="dialog" id="modalConfirm">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color:orange;">
+        <h6 class="modal-title">APM - Artrans/Calidad</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="TextModalConfirm"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" id="Confirm" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal Alert-->
+<div class="modal fade" tabindex="-1" role="dialog" id="modalAlert">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color:orange;">
+        <h6 class="modal-title">APM -Artrans</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="TextModalAlert"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" id="accept">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal Proyecto-->
+<div class="modal fade" tabindex="-1" role="dialog" id="modalProyectoModificar">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color:orange;">
+        <h6 class="modal-title">APM -Artrans</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <div class="form-group">
+              <h6>Transformador</h6>
+              <div class="container-flud">
+                <div class="row justify-content-start">
+                  <div class="col-6">
+                    <input type="text" class="form-control" name="notaVenta" id="ingresoNvMOD" placeholder="Nota de Venta"> 
+                  </div>
+                  <div class="col-3 pl-0">
+                    <button type="button" id="buscarProyectoMOD" class="btn btn-warning ml-1 float-left">Buscar</button>
+                  </div>
+                  <div class="col-12">
+                      <h6 id="resBusquedaMOD"></h6>
+                  </div>
+                </div>
+                <div class="container-fluid">
+                    <p id="cl1MOD" style="display: none;">Cliente: <i><b id="cliResultMOD"></b></i></p>
+                </div>
+              </div>
+              <!--Container Resultados seleccion proyecto-->
+              <div class="container-fluid">
+                <label for="exampleFormControlSelect2MOD">Descripciones</label>
+                <select multiple class="form-control overflow-auto" id="exampleFormControlSelect2MOD">                                
+                </select>
+                <br>
+                <p class="py-1">Seleccionada: <br><i><b id="desTextMOD"></b></i></p>                                                                   
+              </div>
+          </div>         
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-info" data-dismiss="modal" id="acceptMOD">Modificar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal Mod Empleado-->
+<div class="modal fade" tabindex="-1" role="dialog" id="modalEmpleado">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color:orange;">
+        <h6 class="modal-title">APM - Artrans/Calidad</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Seleccione el Área a la cual será redirigido este desvío.</p>       
+       <select id="ModiEmpleado" class="form-control">
+         <option selected>Seleccionar...</option>
+       </select> 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" id="ConfirmModi" class="btn btn-info" data-dismiss="modal">Modificar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!--Javascript Control desvios-->
+<!--Siempre va primero el Jquery y despues el archivo porque thymeleaf es una verga !!!--->
+<script th:src="@{/js/jquery-3.5.1.js}"></script>
+<script th:src="@{/js/desvios.js}"></script>
+<script type="text/javascript">
+    var contextPath = "[[@{/}]]";
+</script>
+
+<!-- Bootstrap core JS-->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+    <!-- Third party plugin JS-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <!-- Contact form JS-->
+    <script src="assets/mail/jqBootstrapValidation.js"></script>
+    <script src="assets/mail/contact_me.js"></script>
+    <!-- Core theme JS-->
+  
+</body>
+
+
+<footer class="footer py-4">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-lg-12 text-lg-center">Copyright © Desarrollos Artrans 2020</div>
+        </div>
+    </div>
+</footer>
+</html>

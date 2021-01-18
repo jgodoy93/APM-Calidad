@@ -1,0 +1,54 @@
+server:
+  port: 8092
+spring:
+  application:
+    name: MARGARITA-SERVICE
+  boot:
+    admin:
+      client:
+        url: http://localhost:8086
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            required: true
+            enable: true
+          quitwait: false
+    username: bonos.artrans@gmail.com
+    password: ppkrqpwjxaesrfjf
+  datasource: 
+    url: jdbc:mysql://127.0.0.1:3306/margarita?allowPublicKeyRetrieval=true&useSSL=false&useTimezone=true&serverTimezone=GMT&characterEncoding=UTF-8
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  thymeleaf:
+    cache: false
+  http:
+    multipart:
+        max-file-size: 2MB
+        max-request-size: 500MB
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} ${LOG_LEVEL_PATTERN:-%5p} %m%n"
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8099/eureka/
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

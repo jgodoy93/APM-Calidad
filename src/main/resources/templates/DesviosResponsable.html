@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Mobirise v5.2.0, mobirise.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <link href="/css/styles.css" rel="stylesheet" />
+    <link href="/css/album-recreated.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <title>APM-Calidad</title>
+</head>
+<header>
+
+</header>
+<body>
+<!--Barra Navegación-->
+<nav class="navbar navbar-light bg-warning" style="background-color:orange;">
+    <div class="col-6">
+        <span class="navbar-brand mb-0 h1">Artrans S.A. | APM</span>
+    </div>
+    <div class="col-6 text-right">
+        <a href="/inicio"> <button type="button" class="btn btn-dark" >Volver</button><a/>
+    </div>
+  </nav>
+
+<!--Nombre Departamento-->
+<div class="container-fluid">
+    <div class="row py-1">      
+        <div class="col-6 text-left mt-1">
+           <h5 id="usuarioLog" th:text="${usuario.nombre}+' '+${usuario.apellido}"></h5>
+        </div>
+      <div class="col-6 text-right">
+        <h3 th:if="${usuario.permiso == T(com.artrans.bonos.enun.Permisos).ADMINAREA}"><i><b style="color: teal;">ADMIN Área</b></i></h3>
+        <h3 th:if="${usuario.permiso == T(com.artrans.bonos.enun.Permisos).EMPLEADO}"><i><b>Responsable de Seguimiento</b></i></h3>
+        <h3 th:if="${usuario.permiso == T(com.artrans.bonos.enun.Permisos).PLANEAMIENTO}"><i><b style="color:darkred">Planificación</b></i></h3>
+      </div>
+  </div>
+</div>
+<!--Navegacion Interna-->
+<!--Navegador Desvios-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light py-3">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <!--Modal Responder desvios-->
+            <div class="modal fade bd-example3-modal-lg" id="DesviosResponsable" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="overflow-y: scroll;">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header" style="background-color:orange;">
+                    <h5 class="modal-title" id="ModalMostraTitulo"></h5>
+                    <div class="text-center">
+                      <div class="spinner-border" role="status" id="sp4" style="display: none;">
+                      </div>
+                    </div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </div>
+                  <div class="modal-body">
+                    <!--Container descripcion desvio-->
+                      <div class="container-fluid">
+                            <div class="col-6">
+                              <p>Nota de Venta: <i><b id="nvMostrar"></b></i></p>
+                            </div>
+                            <div class="col-6">
+                              <p id="cliMos">Cliente: <i><b id="cliMostrar"></b></i></p>
+                            </div>
+                            <div class="col-12">
+                              <p id="nsMos">Nro. Serie: <i><b id="nsDMostrar"></b></i></p>
+                            </div>
+                            <div class="col-12">
+                              <p>Descripción: <i><b id="desDMostrar"></b></i></p>
+                            </div>
+                            <div class="col-12">
+                              <p>Generó: <i><b id="genMostrar"></b></i></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Responsable: <i><b id="segMostrar"></b></i></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Area: <i><b id="sectorMostar"></b></i></p>
+                            </div>
+                            <div class="col-12">
+                              <p>Planta: <i><b id="plantaMostrar"></b></i></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Proceso: <i><b id="proDMostrar"></i></b></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Trafo-Parte: <i><b id="tfDMostrar"></i></b></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Causa Ishikawa: <i><b id="isDMostrar"></i></b></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Efecto No-Calidad: <i><b id="noCMostrar"></i></b></p>
+                            </div>   
+                      </div>
+                      <hr>
+                      <!--Album de Fotos Desvio-->
+                      <div class="album py-2 bg-light border border-secondary rounded">
+                        <div class="d-flex justify-content-center pb-2">
+                          <i><b><p id="titImg" style="display: inline;">Imagenes</p></b></i>
+                          <i><b><p id="msgImg" style="display: none;">El Desvio no tiene imagenes Cargadas.</p></b></i>
+                        </div>
+                        <div class="container-fluid">                          
+                            <div class="col-md-6 " id="contImagenes1">
+                              <div class="card mb-4 box-shadow">
+                                  <img class="card-img-top" id="myImg1M" style="height:300px; width: 100%; display:block;" data-holder-rendered="true">
+                              </div>
+                          </div>
+                          <div class="col-md-6" id="contImagenes2">
+                              <div class="card mb-4 box-shadow">
+                                  <img class="card-img-top" id="myImg2M" style="height:300px; width:100%; display:block;" data-holder-rendered="true">
+                              </div>
+                          </div>
+                        </div>
+                        <div class="container-fluid">                          
+                            <div class="col-md-6" id="contImagenes3">
+                            <div class="card mb-4 box-shadow">
+                                <img class="card-img-top" id="myImg3M" style="height:300px; width: 100%; display:block;" data-holder-rendered="true">
+                            </div>
+                            </div>
+                        <div class="col-md-6" id="contImagenes4">
+                            <div class="card mb-4 box-shadow">
+                                <img class="card-img-top" id="myImg4M" style="height:300px; width:100%; display:block;" data-holder-rendered="true">
+                            </div>
+                        </div>
+                      </div>
+                      <div id="myModal1M" class="modal1">
+                      <span id="closeAM" class="close1">&times;</span>
+                      <img class="modal1-content1" id="Img1M">
+                      </div>
+                      <div id="myModal2M" class="modal1">
+                      <span id="closeBM" class="close1">&times;</span>
+                      <img class="modal1-content1" id="Img2M">
+                      </div>
+                      <div id="myModal3M" class="modal1">
+                      <span id="closeCM" class="close1">&times;</span>
+                      <img class="modal1-content1" id="Img3M">
+                      </div>
+                      <div id="myModal4M" class="modal1">
+                      <span id="closeDM" class="close1">&times;</span>
+                      <img class="modal1-content1" id="Img4M">
+                      </div>
+                    </div>
+                    <hr>
+                      <div class="container-fluid border border-secondary rounded">
+                        <div class="col-12">
+                          <h6>Observación:</h6>
+                          <p id="obsMostrar" style="word-wrap: break-word;"></p>
+                        </div>
+                      </div>
+                      <hr> 
+                      <!--Disposicion Inmediata-->
+                      <div class="container-fluid border border-danger rounded" style="margin-bottom: 0px">
+                        <div class="form-group col-md-12 pt-1">
+                          <label for="Dispo">Disposicion Inmediata</label>
+                          <p><i style="max-width: 700px;"><b id="dispoOculta" style="max-width: 700px;"></i></b></p>
+                          <textarea class="form-control" id="Dispo" rows="8"></textarea>
+                          <h7 id="Vencimiento" class="py-1" style="display: none;">Vencimiento</h7>
+                        </div>
+                        <div class="col-12 m-0">
+                          <div class="d-flex justify-content-end pb-2">
+                            <button type="button" class="btn btn-outline-danger" id="enviarDisp">Enviar Disposición</button>
+                          </div>
+                        </div>
+                      </div>
+                      <hr>
+                      
+                      
+                      <!--Respuesta-->
+                      <div class="container-fluid border border-success rounded mt-2" id="containerRespuesta">
+                        <div class="form-group col-md-12 pt-1">
+                          <p id="MostrarTitulo"></p>
+                          <p><i><b id="obsCorreccion" style="word-wrap: break-word;"></i></b></p>
+                          <hr>
+                        </div>
+                        <div class="col-12">
+                          <h6>Respuesta Desvio</h6>
+                        </div>
+                        <div class="col-12">
+                          <div class="row py-1">
+                            <div class="col-4">
+                                <label for="causa">Causa Raiz</label>
+                                <select id="causa" class="form-control">
+                                  <option selected>Seleccionar...</option>
+                                  <option >Ausencia</option>
+                                  <option >Cansancio</option>
+                                  <option >Clima</option>                                   
+                                  <option >Distraccion</option>
+                                  <option >Falta de Comunicacion</option>
+                                  <option >Falta de Fondos</option>
+                                  <option >Falta de Material</option>
+                                  <option >Falta de Herramienta</option>
+                                  <option >Falta de Planificacion</option>
+                                  <option >Transporte/Movimiento</option>
+                                  <option >Inexperiencia</option>
+                                  <option >Infraestructura</option>
+                                  <option >Planos/Diseño</option>
+                                  <option >Pedido de Materiales</option>
+                                  <option >Otra</option>
+                                </select>
+                                <br>
+                                <label for="hh1">Horas/Hombre de Retrabajo</label>
+                                <textarea class="form-control" id="hh1" rows="1"></textarea> 
+                                <p id="msgA"></p>                         
+                            </div>
+                            <div class="col-8">
+                                  <label for="Analisis1">Analisis de Causa</label>
+                                  <textarea class="form-control" id="Analisis1" rows="8"></textarea>
+                            </div>
+                          </div>
+                        </div>                        
+                        <div class="col-12 m-3">
+                          <label for="Accion1">Accion Correctiva</label>
+                          <textarea class="form-control" id="Accion1" rows="3"></textarea>
+                        </div>
+                        <div class="col-12 m-3" id="enviarCorrect" style="display: none;">
+                          <button type="button" class="btn btn-outline-danger" id="enviarCorr">Enviar Corrección</button>
+                        </div>
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" id="EnvRespuesta" style="background-color: orange;">Enviar Respuesta</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+            <!--Modal Ver Desvio-->
+            <div class="modal fade bd-example2-modal-lg" id="DesvioVER" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="overflow-y: scroll;">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header" style="background-color:orange;">
+                    <h5 class="modal-title" id="ModalMostraTituloVER"></h5>
+                    <div class="text-center">
+                      <div class="spinner-border" role="status" id="sp3" style="display: none;">
+                      </div>
+                    </div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </div>
+                  <div class="modal-body">
+                      <div class="container-fluid">
+                            <div class="col-6">
+                              <p>Nota de Venta: <i><b id="nvMostrarVER"></b></i></p>
+                            </div>
+                            <div class="col-6">
+                              <p id="clienteMostrar">Cliente: <i><b id="cliMostrarVER"></i></b></p>
+                            </div>
+                            <div class="col-12">
+                              <p id="nroSerieMostrar">Nro Serie: <i><b id="nsDMostrarVER"></i></b></p>
+                            </div>
+                            <div class="col-12">
+                              <p>Descripción: <i><b id="desDMostrarVER"></i></b></p>
+                            </div>
+                            <div class="col-12">
+                              <p>Generó: <i><b id="genMostrarVER"></i></b></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Responsable: <i><b id="segMostrarVER"></i></b></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Area: <i><b id="sectorMostarVER"></i></b></p>
+                            </div>
+                            <div class="col-12">
+                              <p>Planta: <i><b id="plantaMostrarVER"></i></b></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Proceso: <i><b id="proDMostrarVER"></i></b></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Trafo-Parte: <i><b id="tfDMostrarVER"></i></b></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Causa Ishikawa: <i><b id="isDMostrarVER"></i></b></p>
+                            </div>
+                            <div class="col-6">
+                              <p>Efecto No-Calidad: <i><b id="noCMostrarVER"></i></b></p>
+                            </div>   
+                      </div>
+                      <hr>
+                      <!--Album de Fotos Desvio-->
+                      <div class="album py-2 bg-light border border-secondary rounded">
+                        <div class="d-flex justify-content-center pb-2">
+                          <i><b><p id="tituloImg" style="display: inline;">Imagenes</p></b></i>
+                          <i><b><p id="msgImagenes" style="display: none;">El Desvio no tiene imagenes Cargadas.</p></b></i>
+                        </div>
+                        <div class="container-fluid">                          
+                            <div class="col-md-6" id="containerImagenes1">
+                              <div class="card mb-4 box-shadow">
+                                  <img class="card-img-top" id="myImg1VER" style="height:300px; width: 100%; display:block;" data-holder-rendered="true">
+                              </div>
+                            </div>
+                          <div class="col-md-6" id="containerImagenes2">
+                              <div class="card mb-4 box-shadow">
+                                  <img class="card-img-top" id="myImg2VER" style="height:300px; width:100%; display:block;" data-holder-rendered="true">
+                              </div>
+                          </div>
+                        </div>
+                        <div class="container-fluid">                          
+                              <div class="col-md-6" id="containerImagenes3">
+                              <div class="card mb-4 box-shadow">
+                                  <img class="card-img-top" id="myImg3VER" style="height:300px; width: 100%; display:block;" data-holder-rendered="true">
+                              </div>
+                              </div>
+                          <div class="col-md-6" id="containerImagenes4">
+                              <div class="card mb-4 box-shadow">
+                                  <img class="card-img-top" id="myImg4VER" style="height:300px; width:100%; display:block;" data-holder-rendered="true">
+                              </div>
+                          </div>
+                        </div>
+                        <div id="myModal1VER" class="modal1">
+                        <span id="closeAVER" class="close1">&times;</span>
+                        <img class="modal1-content1" id="Img1VER">
+                        </div>
+                        <div id="myModal2VER" class="modal1">
+                        <span id="closeBVER" class="close1">&times;</span>
+                        <img class="modal1-content1" id="Img2VER">
+                        </div>
+                        <div id="myModal3VER" class="modal1">
+                        <span id="closeCVER" class="close1">&times;</span>
+                        <img class="modal1-content1" id="Img3VER">
+                        </div>
+                        <div id="myModal4VER" class="modal1">
+                        <span id="closeDVER" class="close1">&times;</span>
+                        <img class="modal1-content1" id="Img4VER">
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="container-fluid border border-secondary rounded">
+                        <div class="col-12">
+                          <p>Observación: <br><i><b id="obsMostrarVER" style="word-wrap: break-word;"></i></b></p> 
+                        </div>
+                      </div>
+                      <hr>
+                      <!--Disposicion Inmediata-->
+                      <div class="container-fluid border border-danger rounded" style="margin-bottom: 0px">
+                        <div class="form-group col-md-12 pt-1">
+                          <p>Disposición Inmediata: <br><i><b id="DispoVER" style="word-wrap: break-word;"></i></b></p>
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="container-fluid" id="containerObservacion" style="display: none;">
+                        <div class="form-group col-md-12">
+                          <label for="ObservacionCorreccion">Observación Correccion</label>
+                          <textarea class="form-control" id="ObservacionCorreccion" rows="8"></textarea>   
+                        </div>
+                        <div class="col-12 m-0">
+                          <div class="d-flex justify-content-end pb-2">
+                            <button type="button" class="btn btn-outline-danger" id="enviarObservacion">Enviar Correccion</button>
+                          </div>
+                        </div>
+                        <hr>
+                      </div>
+                      <!--OBSERVACION-->
+                      <div class="container-fluid border border-danger rounded" id="ObservacionResp" style="display: none;">
+                          <div class="form-group col-md-12 pt-1">
+                            <p>Estado Desvio: <i id="EstadoDesvioCal" style="color:red"></i></p>
+                            <p>Observación Calidad: <br><i><b id="ObservacionCalidad" style="word-wrap: break-word; color:red"></i></b></p>                           
+                          </div>                          
+                    </div>
+                    <hr> 
+                    <!--RESPUESTA-->
+                      <div class="container-fluid border rounded" id="containerRespuestaVER">
+                        <div class="col-12 pt-1">
+                          <h6>Respuesta Desvio</h6>
+                        </div>
+                        <div class="col-12">
+                          <div class="row py-1">
+                            <div class="col-12">
+                                <h7 id="EstadoDesvio"></h7> 
+                                <p>Causa Raiz: <i><b id="verCausaR"></i></b></p>
+                                <p>Horas/H de Retrabajo: <i><b id="verHoras"></i></b></p>
+                                <p>Analisis de Causa: <i><b id="verAnalisis" style="word-wrap: break-word;"></i></b></p>
+                                <p>Accion Correctiva: <i><b id="verAccion" style="word-wrap: break-word;"></i></b></p>                              
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <hr>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Ver Estados
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="#">Cerrados</a>
+              <a class="dropdown-item" href="#">Respondidos</a>
+              <a class="dropdown-item" href="#">Aprobados</a>
+              <a class="dropdown-item" href="#">No Aprobados</a>
+        </li>
+      </ul>
+      <div class="form-group pull-right my-2 my-lg-0">
+        <input type="text" class="search form-control" placeholder="Buscardor" id="match">
+      </div>
+    </div>
+  </nav>
+    <div class="container-fluid m-1">      
+        <div class="row">
+            <span class="counter pull-right"></span>
+            <table class="table table table-sm table-bordered results overflow-auto" th:if="${usuario.permiso == T(com.artrans.bonos.enun.Permisos).ADMINAREA}">
+                <thead class="thead-dark" style="font-size: small;">
+                <tr>
+                    <th scope="col">#Nro</th>
+                    <th scope="col">Emision</th>
+                    <th scope="col">Nv</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Area</th>
+                    <th scope="col">Asignado</th>
+                    <th scope="col">D. Inmediata</th>
+                    <th scope="col">Respuesta</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+                <tr class="warning no-result">
+                  <td class="text-white mt-0" colspan="10"><i class="fa fa-warning"></i> No result</td>
+                </tr>
+                </thead>
+                <tbody class="table-bordered" style="font-size: small;" id="Desvios">
+                <tr th:each="Desvio:${desviosResp}" class="text-lg-center" th:if="${Desvio.area.encargado.id == usuario.id && Desvio.visible == true}">
+                    <td scope="row" class="py-1" id="nroDesvio" th:text="${Desvio.id}"></td>
+                    <td scope="row" class="py-1" id="fechaEmi" th:text="${Desvio.fechaEmision}"></td>
+                    <td scope="row" class="py-1" id="nvDesvio" th:text="${Desvio.proyecto.notadeVenta}"></td>
+                    <td scope="row" class="py-1" id="CliDesvio" th:text="${Desvio.proyecto.cliente}"></td> 
+                    <td scope="row" class="py-2" th:switch="${Desvio.estado}">
+                      <h7 th:case="'Enviado'"><b><i th:text="${'Emitido'}" style="color:orange"></i></b></h7>
+                      <h7 th:case="'Checkeado'"><b><i th:text="${Desvio.estado}" style="color:teal"></i></b></h7>
+                      <h7 th:case="'Cerrado'"><b><i th:text="${Desvio.estado}" style="color:springgreen"></i></b></h7>
+                      <h7 th:case="'Corregir'"><b><i th:text="${Desvio.estado}" style="color:red"></i></b></h7>
+                      <h7 th:case="'Asignado'"><b><i th:text="${Desvio.estado}" style="color:teal"></i></b></h7>
+                      <h7 th:case="'Verificar'"><b><i th:text="${'Respondido'}" style="color:blue"></i></b></h7>
+                    </td>
+                    <td scope="row" class="py-1" id="areaResp" th:text="${Desvio.area.nombre}"></td>
+                    <td scope="row" class="py-1" id="desvioResp" th:text="${Desvio.responsable.nombre+' '+Desvio.responsable.apellido}"></td>
+                    <td scope="row" class="py-1" id="dInmediata" th:text="${Desvio.fechaDisposicion}"></td>
+                    <td scope="row" class="py-1" id="FechaResp" th:text="${Desvio.fechaRespuesta}"></td>
+                    <td>
+                      <a th:href="@{DesvioCalidad/OneDesvio(Id=${Desvio.id})}" title="Ver Desvio" data-toggle="modal" data-dismiss="modal" data-target=".bd-example2-modal-lg" id="verDesvio"><i class="material-icons md-18">visibility</i></a>
+                      <a th:href="@{DesvioCalidad/OneDesvio(Id=${Desvio.id})}" th:style ="${Desvio.habilitacionArea ? 'display: inline' : 'display: none'}" title="Responder Desvio" data-toggle="modal" data-dismiss="modal" data-target=".bd-example3-modal-lg" id="RespDesvio"><i class="material-icons md-18">report_problem</i></a>   
+                      <a href="" th:style ="${Desvio.habilitacionArea ? 'display: none' : 'display: inline'}"title="Deshabilitado" id="Candadito"><i class="material-icons md-18">lock</i></a>
+                      <a th:href="${Desvio.id}" th:style ="${Desvio.Habilitado? 'color: gray' : 'color: teal'}" title="Asignar Responsable" id="Asignar"><i class="material-icons md-18">person_add</i></a> 
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+          </div>
+
+            <table class="table table table-sm table-bordered results overflow-auto" th:if="${usuario.permiso == T(com.artrans.bonos.enun.Permisos).EMPLEADO}">
+              <thead class="thead-dark" style="font-size: small;">
+              <tr>
+                  <th scope="col">#Nro</th>
+                  <th scope="col">Emision</th>
+                  <th scope="col">Nv</th>
+                  <th scope="col">Cliente</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col">Area</th>
+                  <th scope="col">D. Inmediata</th>
+                  <th scope="col">Respuesta</th>
+                  <th scope="col">Acciones</th>
+              </tr>
+              <tr class="warning no-result">
+                <td class="text-white mt-0" colspan="10"><i class="fa fa-warning"></i> No result</td>
+              </tr>
+              </thead>
+              <tbody class="table-bordered" style="font-size: small;" id="Desvios">
+              <tr th:each="Desvio:${desviosResp}" class="text-lg-center" th:if="${Desvio.responsable.id == usuario.id && Desvio.Habilitado == true}">
+                  <td scope="row" class="py-1" id="nroDesvio" th:text="${Desvio.id}"></td>
+                  <td scope="row" class="py-1" id="fechaEmi" th:text="${Desvio.fechaEmision}"></td>
+                  <td scope="row" class="py-1" id="nvDesvio" th:text="${Desvio.proyecto.notadeVenta}"></td>
+                  <td scope="row" class="py-1" id="CliDesvio" th:text="${Desvio.proyecto.cliente}"></td> 
+                  <td scope="row" class="py-2" th:switch="${Desvio.estado}">
+                    <h7 th:case="'Enviado'"><b><i th:text="${'Emitido'}" style="color:orange"></i></b></h7>
+                    <h7 th:case="'Checkeado'"><b><i th:text="${Desvio.estado}" style="color:teal"></i></b></h7>
+                    <h7 th:case="'Cerrado'"><b><i th:text="${Desvio.estado}" style="color:springgreen"></i></b></h7>
+                    <h7 th:case="'Corregir'"><b><i th:text="${Desvio.estado}" style="color:red"></i></b></h7>
+                    <h7 th:case="'Asignado'"><b><i th:text="${Desvio.estado}" style="color:teal"></i></b></h7>
+                    <h7 th:case="'Verificar'"><b><i th:text="${'Respondido'}" style="color:blue"></i></b></h7>
+                  </td>
+                  <td scope="row" class="py-1" th:text="${Desvio.area.nombre}"></td>
+                  <td scope="row" class="py-1" id="dInmediata" th:text="${Desvio.fechaDisposicion}"></td>
+                  <td scope="row" class="py-1" id="FechaResp" th:text="${Desvio.fechaRespuesta}"></td>
+                  <td>
+                    <a th:href="@{DesvioCalidad/OneDesvio(Id=${Desvio.id})}" title="Ver Desvio" data-toggle="modal" data-dismiss="modal" data-target=".bd-example2-modal-lg" id="verDesvio"><i class="material-icons md-18">visibility</i></a>
+                    <a th:href="@{DesvioCalidad/OneDesvio(Id=${Desvio.id})}" th:style ="${Desvio.habilitacionArea ? 'display: inline' : 'display: none'}" title="Responder Desvio" data-toggle="modal" data-dismiss="modal" data-target=".bd-example3-modal-lg" id="RespDesvio"><i class="material-icons md-18">report_problem</i></a>
+                    <a href="" th:style ="${Desvio.habilitacionArea ? 'display: none' : 'display: inline'}"title="Deshabilitado" id="Candadito"><i class="material-icons md-18">lock</i></a>
+                  </td>
+              </tr>
+              </tbody>
+            </table>
+
+            <table class="table table table-sm table-bordered results overflow-auto" th:if="${usuario.permiso == T(com.artrans.bonos.enun.Permisos).PLANEAMIENTO}">
+              <thead class="thead-dark" style="font-size: small;">
+              <tr>
+                  <th scope="col">#Nro</th>
+                  <th scope="col">Emision</th>
+                  <th scope="col">Emisor</th>
+                  <th scope="col">Nv</th>
+                  <th scope="col">Cliente</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col">Area</th>
+                  <th scope="col">Responsable</th>
+                  <th scope="col">D. Inmediata</th>
+                  <th scope="col">Respuesta</th>
+                  <th scope="col">Acciones</th>
+              </tr>
+              <tr class="warning no-result">
+                <td class="text-white mt-0" colspan="10"><i class="fa fa-warning"></i> No result</td>
+              </tr>
+              </thead>
+              <tbody class="table-bordered" style="font-size: small;" id="Desvios">
+              <tr th:each="Desvio:${desviosResp}" class="text-lg-center" th:if="${Desvio.habilitacionArea == true}">
+                  <td scope="row" class="py-1" id="nroDesvio" th:text="${Desvio.id}"></td>
+                  <td scope="row" class="py-1" id="fechaEmi" th:text="${Desvio.fechaEmision}"></td>
+                  <td scope="row" class="py-1" id="fechaEmi" th:text="${Desvio.Generador.nombre+' '+Desvio.Generador.apellido}"></td>
+                  <td scope="row" class="py-1" id="nvDesvio" th:text="${Desvio.proyecto.notadeVenta}"></td>
+                  <td scope="row" class="py-1" id="CliDesvio" th:text="${Desvio.proyecto.cliente}"></td> 
+                  <td scope="row" class="py-2" th:switch="${Desvio.estado}">
+                    <h7 th:case="'Enviado'"><b><i th:text="${'Emitido'}" style="color:orange"></i></b></h7>
+                    <h7 th:case="'Checkeado'"><b><i th:text="${Desvio.estado}" style="color:teal"></i></b></h7>
+                    <h7 th:case="'Cerrado'"><b><i th:text="${Desvio.estado}" style="color:springgreen"></i></b></h7>
+                    <h7 th:case="'Corregir'"><b><i th:text="${Desvio.estado}" style="color:red"></i></b></h7>
+                    <h7 th:case="'Asignado'"><b><i th:text="${Desvio.estado}" style="color:teal"></i></b></h7>
+                    <h7 th:case="'Verificar'"><b><i th:text="${'Respondido'}" style="color:blue"></i></b></h7>
+                  </td>
+                  <td scope="row" class="py-1" th:text="${Desvio.area.nombre}"></td>
+                  <td scope="row" class="py-1" th:text="${Desvio.responsable.nombre+' '+Desvio.responsable.apellido}"></td>
+                  <td scope="row" class="py-1" id="dInmediata" th:text="${Desvio.fechaDisposicion}"></td>
+                  <td scope="row" class="py-1" id="FechaResp" th:text="${Desvio.fechaRespuesta}"></td>
+                  <td>
+                    <a th:href="@{DesvioCalidad/OneDesvio(Id=${Desvio.id})}" title="Ver Desvio" data-toggle="modal" data-dismiss="modal" data-target=".bd-example2-modal-lg" id="verDesvio"><i class="material-icons md-18">visibility</i></a>
+                  </td>
+              </tr>
+              </tbody>
+            </table>
+
+        
+    </div>
+</div>
+
+
+<!--Modal Confirmacion-->
+<div class="modal fade" tabindex="-1" role="dialog" id="modalConfirmRes">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color:orange;">
+        <h6 class="modal-title">APM - Artrans/Calidad</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="TextModalConfirmRes"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" id="ConfirmRes" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal Alert-->
+<div class="modal fade" tabindex="-1" role="dialog" id="modalAlertRes">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color:orange;">
+        <h6 class="modal-title">APM -Artrans</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="TextModalAlertRes"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" id="acceptRes">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal Empleados Responsables-->
+<div class="modal fade" tabindex="-1" role="dialog" id="modalEmpleado">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color:orange;">
+        <h6 class="modal-title">APM - Artrans/Calidad</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="false">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Seleccione el Responsable al que quiere asignar este Desvío</p>       
+       <select id="ModiEmpleado" class="form-control">
+         <option selected>Seleccionar...</option>
+       </select> 
+      </div>
+      <div class="modal-footer">
+        <div class="row" style="margin-top: 2px;display:none;" id="row1">
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:block;"></span>
+          <p style="display:inline;margin-bottom: 0px;margin-left: 5px;">Asignando...</p>
+        </div>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" id="ConfirmModi" class="btn btn-info" data-dismiss="modal">Asignar</button>  
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!--Javascript Control desvios-->
+<!--Siempre va primero el Jquery--->
+<script th:src="@{/js/jquery-3.5.1.js}"></script>
+<script th:src="@{/js/desviosResp.js}"></script>
+<script th:src="@{js/scripts.js}"></script>
+
+<script type="text/javascript">
+    var contextPath = "[[@{/}]]";
+</script>
+
+<!-- Bootstrap core JS-->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+    <!-- Third party plugin JS-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <!-- Contact form JS-->
+    <script src="assets/mail/jqBootstrapValidation.js"></script>
+    <script src="assets/mail/contact_me.js"></script>
+    <!-- Core theme JS-->
+    
+  
+</body>
+
+
+<footer class="footer py-4">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-lg-12 text-lg-center">Copyright © Desarrollos Artrans 2020</div>
+        </div>
+    </div>
+</footer>
+</html>

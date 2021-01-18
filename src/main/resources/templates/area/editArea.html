@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html
+  lang="es"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.springframework.org/security/tags"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Artrans - e-Oficina</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
+    <!-- Font Awesome icons (free version)-->
+    <script
+      src="https://use.fontawesome.com/releases/v5.13.0/js/all.js"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Google fonts-->
+    <link
+      href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <!-- Third party plugin CSS-->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css"
+      rel="stylesheet"
+    />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/styles.css" rel="stylesheet" />
+  </head>
+
+  <body id="page-top">
+    <!-- Navigation-->
+    <nav
+      class="navbar navbar-expand-lg navbar-light fixed-top py-3"
+      id="mainNav"
+    >
+      <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="/inicio">e-Oficina</a>
+        <button
+          class="navbar-toggler navbar-toggler-right"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarResponsive"
+          aria-controls="navbarResponsive"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto my-2 my-lg-0">
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="/inicio">Vovler</a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link js-scroll-trigger"
+                href="/cargarbonos"
+                th:if="${#strings.contains(session.usuario.permiso,'SUPERVISOR')}"
+                th:text="${'Cargar Bono'}"
+              ></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="/logout">Salir</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- Masthead-->
+    <header class="masthead">
+      <div class="container h-50">
+        <div
+          class="row h-50 align-items-center justify-content-center text-center"
+        >
+          <div class="col-lg-10 align-self-end">
+            <h1
+              class="text-uppercase text-white font-weight-bold"
+              th:text="${area.nombre}"
+            ></h1>
+            <hr class="divider my-0" />
+          </div>
+          <div class="col-lg-8 align-self-baseline">
+            <p th:text="${area.encargado} == null ? 'Jefe Sin Asignar' :  'jefe de Sector, '+${area.encargado.apellido}+', '+ ${area.encargado.nombre}"class="text-white-75 font-weight-light mb-5"></p></p>
+
+            <div>
+              <form name="Jefe" action="/agregaAreaJefe" method="post">
+                <input
+                  type="hidden"
+                  class="form-control"
+                  name="idArea"
+                  th:value="${area.unidadOrganizacionalCodi}"
+                />
+                <label
+                  ><p class="text-white-75 font-weight-light mb-1">
+                    Asignar Jefe
+                  </p></label
+                >
+                <select class="form-control" name="idJefe">
+                  <option
+                    type="text"
+                    class="form-control"
+                    th:each="emp:${empleados}"
+                    th:value="${emp.id}"
+                    th:text=" ${emp.apellido} + ', ' + ${emp.nombre}"
+                  ></option>
+                </select>
+                <button type="submit" class="btn btn-primary">
+                  Agregar Jefe
+                </button>
+              </form>
+            </div>
+            <div>
+              <form name="empleado" action="/agregaAreaEmpleado" method="post">
+                <input
+                  type="hidden"
+                  class="form-control"
+                  name="idArea"
+                  th:value="${area.unidadOrganizacionalCodi}"
+                />
+                <label
+                  ><p class="text-white-75 font-weight-light mb-1">
+                    Asignar Empleado
+                  </p></label
+                >
+                <select class="form-control" name="idEmpleado">
+                  <option
+                    type="text"
+                    class="form-control"
+                    th:each="emp:${empleados}"
+                    th:value="${emp.id}"
+                    th:text=" ${emp.apellido} + ', ' + ${emp.nombre}"
+                  ></option>
+                </select>
+                <button type="submit" class="btn btn-primary">
+                  Agregar Empleado
+                </button>
+              </form>
+            </div>
+            <!-- tabla-->
+            <br />
+            <div class="form-group pull-right">
+              <input
+                type="text"
+                class="search form-control"
+                placeholder="¿Que Empleado desea buscar?"
+              />
+            </div>
+            <span class="counter pull-right"></span>
+            <table
+              class="table table table-sm table-dark table-bordered results"
+            >
+              <thead>
+                <tr>
+                  <th class="text-white mt-0">#</th>
+                  <th class="text-white mt-0">Nombre</th>
+                  <th class="text-white mt-0">Apellido</th>
+                  <th class="text-white mt-0">D.N.I</th>
+                </tr>
+                <tr class="warning no-result">
+                  <td class="text-white mt-0" colspan="4">
+                    <i class="fa fa-warning"></i> No result
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="responsable:${responsables}">
+                    <td  class="text-white mt-0"><a th:href="@{/eliminaEmpleado__${responsable.id}__=__${area.unidadOrganizacionalCodi}__}">Eliminar</a>
+                  <td
+                    th:text="${responsable.nombre}"
+                    class="text-white mt-0"
+                  ></td>
+                  <td
+                    th:text="${responsable.apellido}"
+                    class="text-white mt-0"
+                  ></td>
+                  <td th:text="${responsable.dni}" class="text-white mt-0"></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- tabla-->
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- About-->
+
+    <!-- Footer-->
+
+    <!-- Bootstrap core JS-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+    <!-- Third party plugin JS-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+    <!-- Core theme JS-->
+    <script src="js/scripts.js"></script>
+  </body>
+</html>
